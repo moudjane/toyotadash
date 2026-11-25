@@ -56,9 +56,13 @@ be confirmed on the road (see `TODO.md`).
 
 ```
 app/src/main/java/com/moudjane/toyotadash/
-├── data/bluetooth/   BLE GATT + Classic SPP transports, scan, reconnect with retries
-├── data/obd2/        ELM327 driver, PID definitions, debug TCP bridge
+├── core/             Pure Kotlin, no Android dependency (ready to be shared with iOS)
+│   ├── elm/          ELM327 protocol: transport interface, driver, response parsing
+│   ├── pid/          Standard and Toyota hybrid PID definitions
+│   └── dash/         Reading loop, decoding, hybrid state, energy flows, demo drive
+├── data/bluetooth/   Android BLE GATT + Classic SPP transports, scan, reconnect
 ├── data/canbus/      Head-unit vehicle data (Settings.System) for ECO / EV mode
+├── data/debug/       Debug TCP bridge
 └── ui/obd/           Connect screen, dashboard, raw-data view, flat palette
 ```
 
@@ -72,6 +76,13 @@ Requirements: Android Studio (recent), JDK 11+, an Android device or emulator (m
 ```bash
 ./gradlew assembleDebug
 adb install app/build/outputs/apk/debug/app-debug.apk
+```
+
+Unit tests (protocol parsing, PID formulas checked against frames read on the car,
+reading loop with a scripted fake ELM327):
+
+```bash
+./gradlew testDebugUnitTest
 ```
 
 No dongle or car? Debug builds have a simulator and fake dongles:
