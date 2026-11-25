@@ -1,8 +1,11 @@
 // Shared OBD2 logic (Kotlin Multiplatform).
 //   commonMain  : ELM327 protocol, PID formulas, dashboard logic — pure Kotlin
 //   androidMain : Android Bluetooth (BLE GATT + Classic SPP) transports
+//   iosMain     : iOS Bluetooth (CoreBluetooth BLE) transport
 //   jvm         : only used to run the commonTest suite quickly on the dev machine
-// An iOS target (CoreBluetooth transport in iosMain) comes with the iPhone / CarPlay app.
+// iOS builds into Shared.xcframework, used by the iPhone / CarPlay app in ios/.
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -15,6 +18,15 @@ kotlin {
         minSdk = 24
     }
     jvm()
+
+    val xcf = XCFramework("Shared")
+    listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
+        target.binaries.framework {
+            baseName = "Shared"
+            isStatic = true
+            xcf.add(this)
+        }
+    }
 
     sourceSets {
         commonMain.dependencies {

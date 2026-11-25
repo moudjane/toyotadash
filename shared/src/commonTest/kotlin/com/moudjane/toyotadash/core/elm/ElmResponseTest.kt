@@ -16,7 +16,7 @@ class ElmResponseTest {
         assertContentEquals(bytes(0x1A, 0xF8), ElmResponse.extractData("410C1AF8", 0x41, 0x0C))
     }
 
-    @Test fun `spaces, lowercase and SEARCHING line are tolerated`() {
+    @Test fun `spaces and lowercase and SEARCHING line are tolerated`() {
         assertContentEquals(bytes(0x7B), ElmResponse.extractData("SEARCHING...\n41 05 7b", 0x41, 0x05))
     }
 

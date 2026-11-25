@@ -25,7 +25,7 @@ class ObdDriverTest {
         assertTrue(error is ElmException)
     }
 
-    @Test fun `setHeader listens to the ECU answer address, once`() = runTest {
+    @Test fun `setHeader listens to the ECU answer address and once`() = runTest {
         val elm = FakeElm()
         val driver = ObdDriver(elm)
         driver.setHeader("7E2")
@@ -48,7 +48,7 @@ class ObdDriverTest {
         assertEquals(setOf("01", "05", "0C", "0D", "20"), pids)
     }
 
-    @Test fun `NO DATA reads as null, adapter voltage is parsed`() = runTest {
+    @Test fun `NO DATA reads as null and adapter voltage is parsed`() = runTest {
         val driver = ObdDriver(FakeElm())
         assertNull(driver.readPid("012F"))
         assertEquals(14.1f, driver.readAdapterVoltage()!!, 0.001f)

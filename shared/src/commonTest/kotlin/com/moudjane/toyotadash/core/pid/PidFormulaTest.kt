@@ -27,7 +27,7 @@ class PidFormulaTest {
         assertEquals(pack, blocks.sum(), 0.1f)
     }
 
-    @Test fun `HV current, positive = discharge`() {
+    @Test fun `HV current and positive = discharge`() {
         assertEquals(1.10f, toyota(ToyotaHybridPids.HV_CURRENT, Frames.HV_2198), 0.001f)
         assertEquals(-12.5f, toyota(ToyotaHybridPids.HV_CURRENT, "61987B1E"), 0.001f)
     }
