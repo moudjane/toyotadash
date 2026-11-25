@@ -1,10 +1,12 @@
-package com.moudjane.toyotadash.data.bluetooth
+package com.moudjane.toyotadash.ios
 
 import com.moudjane.toyotadash.core.dash.DashPoller
 import com.moudjane.toyotadash.core.dash.DashValues
 import com.moudjane.toyotadash.core.dash.DemoDrive
 import com.moudjane.toyotadash.core.dash.openSession
 import com.moudjane.toyotadash.core.elm.ObdDriver
+import com.moudjane.toyotadash.data.bluetooth.BleDongle
+import com.moudjane.toyotadash.data.bluetooth.IosBleLink
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
@@ -100,3 +102,6 @@ class DashController {
         driver = null
     }
 }
+
+/** Swift-friendly block voltages: NaN for a missing block (Swift sees [KotlinFloat], no optionals in arrays). */
+fun DashValues.blockVoltsOrNaN(): List<Float> = blocks.map { it ?: Float.NaN }
