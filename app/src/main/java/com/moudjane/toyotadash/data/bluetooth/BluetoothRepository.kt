@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import com.moudjane.toyotadash.core.elm.ElmTransport
 import java.io.IOException
 import java.util.UUID
 

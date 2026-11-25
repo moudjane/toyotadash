@@ -6,9 +6,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.moudjane.toyotadash.data.bluetooth.BluetoothRepository
 import com.moudjane.toyotadash.data.bluetooth.BtDevice
-import com.moudjane.toyotadash.data.bluetooth.ElmTransport
+import com.moudjane.toyotadash.core.elm.ElmResponse
+import com.moudjane.toyotadash.core.elm.ElmTransport
+import com.moudjane.toyotadash.core.elm.ObdDriver
 import com.moudjane.toyotadash.data.canbus.CanBusKeys
-import com.moudjane.toyotadash.data.obd2.ObdDriver
 import com.moudjane.toyotadash.data.obd2.PidDef
 import com.moudjane.toyotadash.data.obd2.StandardPids
 import com.moudjane.toyotadash.data.obd2.ToyotaHybridPids
@@ -243,7 +244,7 @@ class ObdViewModel(application: Application) : AndroidViewModel(application) {
                             for ((command, sameCmd) in pids.groupBy { it.command }) {
                                 val raw = runCatching { d.readPid(command) }.getOrNull()
                                 sameCmd.forEach { pid ->
-                                    val r = parseToyotaPid(d, pid, raw)
+                                    val r = parseToyotaPid(pid, raw)
                                     anyOk = anyOk || r.isOk
                                     toyota[pid.name] = r
                                 }
@@ -292,7 +293,7 @@ class ObdViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun readStandardPid(d: ObdDriver, pid: PidDef): PidReading {
         val raw    = d.readPid(pid.command)
         val pidNum = pid.command.substring(2).toInt(16)
-        val data   = d.extractData(raw, 0x41, pidNum)
+        val data   = ElmResponse.extractData(raw, 0x41, pidNum)
         val value  = data?.let { runCatching { pid.parse(it) }.getOrNull() }
         return PidReading(
             id = pid.command, name = pid.name, unit = pid.unit,
@@ -300,10 +301,10 @@ class ObdViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    private fun parseToyotaPid(d: ObdDriver, pid: ToyotaPidDef, raw: String?): PidReading {
+    private fun parseToyotaPid(pid: ToyotaPidDef, raw: String?): PidReading {
         val cmdByte = pid.command.substring(2).toInt(16)
         val modeNum = pid.command.substring(0, 2).toInt(16)
-        val data    = d.extractData(raw, 0x40 + modeNum, cmdByte)
+        val data    = ElmResponse.extractData(raw, 0x40 + modeNum, cmdByte)
         val value   = data?.let { runCatching { pid.parse(it) }.getOrNull() }
         return PidReading(
             id = "${pid.command}@${pid.ecuAddress}", name = pid.name, unit = pid.unit,

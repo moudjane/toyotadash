@@ -12,6 +12,7 @@ import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.Context
 import android.os.Build
+import com.moudjane.toyotadash.core.elm.ElmTransport
 import java.io.IOException
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
@@ -176,15 +177,9 @@ class BleElmLink(private val context: Context) {
 
     /** Connects to [address] and exposes the link as an [ElmTransport] for ObdDriver. Blocking. */
     fun openTransport(address: String, onLog: (String) -> Unit = {}): ElmTransport {
-        val input = NotificationInputStream(isAlive = { isConnected })
-        connect(address, onData = input::push, onLog = onLog)
-        val output = GattOutputStream(send = ::write)
-        val link = this
-        return object : ElmTransport {
-            override val input = input
-            override val output = output
-            override fun close() = link.close()
-        }
+        val transport = BleTransport(this)
+        connect(address, onData = transport::push, onLog = onLog)
+        return transport
     }
 
     fun close() {
