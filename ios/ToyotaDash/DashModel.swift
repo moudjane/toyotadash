@@ -8,11 +8,18 @@ import Shared
  */
 final class DashModel: ObservableObject {
 
+    /** One state for the iPhone screen and the CarPlay screen. */
+    static let shared = DashModel()
+
     enum Phase { case home, connecting, connected, demo }
 
     @Published private(set) var phase: Phase = .home
     @Published private(set) var step: String?
-    @Published private(set) var values: DashValues?
+    @Published private(set) var values: DashValues? { didSet { record(values) } }
+    /** Power (kW) sampled every 0.5 s over the last minute, for the CarPlay history graph. */
+    @Published private(set) var kwHistory: [Float] = []
+    static let historySize = 120
+    private var lastSample = Date.distantPast
     @Published private(set) var dongles: [BleDongle] = []
     @Published private(set) var isScanning = false
     @Published private(set) var error: String?
@@ -78,5 +85,14 @@ final class DashModel: ObservableObject {
         phase = .home
         values = nil
         step = nil
+    }
+
+    private func record(_ v: DashValues?) {
+        guard let v else { kwHistory = []; return }
+        let now = Date()
+        guard now.timeIntervalSince(lastSample) >= 0.5 else { return }
+        lastSample = now
+        kwHistory.append(v.kw.f ?? 0)
+        if kwHistory.count > Self.historySize { kwHistory.removeFirst(kwHistory.count - Self.historySize) }
     }
 }

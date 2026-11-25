@@ -10,6 +10,7 @@ struct DashboardView: View {
 
     var body: some View {
         if let v = model.values {
+            GlassEffectContainer(spacing: 16) {
             VStack(alignment: .leading, spacing: 0) {
                 StatusLine(name: model.deviceName, volts: v.volts12.f, ambient: v.ambient.f) { model.disconnect() }
 
@@ -44,17 +45,22 @@ struct DashboardView: View {
                     Metric(label: "PÉDALE", value: fmt(v.pedal.f), unit: "%")
                     Metric(label: "ESSENCE", value: fmt(v.fuel.f), unit: "%")
                 }
+                .padding(.vertical, 14)
+                .padding(.horizontal, 16)
+                .glassPanel(24)
             }
             .padding(.horizontal, 24)
             .padding(.top, 8)
             .padding(.bottom, 4)
+            }
         }
     }
+}
 
-    private func engineLine(_ rpm: Float?) -> String {
-        guard let rpm, rpm > 200 else { return "Moteur thermique arrêté" }
-        return "Moteur thermique  \(Int(rpm).formatted()) tr/min"
-    }
+/** "Moteur thermique 2 551 tr/min", or stopped. */
+func engineLine(_ rpm: Float?) -> String {
+    guard let rpm, rpm > 200 else { return "Moteur thermique arrêté" }
+    return "Moteur thermique  \(Int(rpm).formatted()) tr/min"
 }
 
 // ── Pieces ──────────────────────────────────────────────────────────────────
@@ -78,10 +84,14 @@ private struct StatusLine: View {
                     .frame(width: 32, height: 32)
             }
         }
+        .padding(.leading, 16)
+        .padding(.trailing, 6)
+        .padding(.vertical, 6)
+        .glassEffect(.regular, in: Capsule())
     }
 }
 
-private struct DriveSelectPill: View {
+struct DriveSelectPill: View {
     let select: DriveSelect
     var body: some View {
         let pill: (String, Color)? =
@@ -97,7 +107,7 @@ private struct DriveSelectPill: View {
 }
 
 /** Zero at 30 %: power drawn grows to the right (white), regen to the left (green). */
-private struct PowerMeter: View {
+struct PowerMeter: View {
     let kw: Float?
 
     var body: some View {
@@ -156,13 +166,15 @@ private struct Battery: View {
                 Metric(label: "TEMP.", value: fmt(v.hvTemp.f), unit: "°C",
                        color: (v.hvTemp.f ?? 0) > 45 ? Flat.engine : Flat.text)
             }
+            .padding(14)
+            .glassPanel(24)
             .padding(.top, 4)
         }
     }
 }
 
 /** Charge bar with the 40 % / 80 % marks: Toyota keeps the battery between them. */
-private struct SocBar: View {
+struct SocBar: View {
     let soc: Float?
     var body: some View {
         GeometryReader { geo in
@@ -181,7 +193,7 @@ private struct SocBar: View {
 }
 
 /** The 10 battery blocks: height = voltage, the weakest one in amber. */
-private struct BlockStrip: View {
+struct BlockStrip: View {
     let volts: [Float]
     var body: some View {
         let valid = volts.filter { $0.isFinite }
@@ -213,7 +225,7 @@ private struct FlowSection: View {
 }
 
 /** MOTEUR — ROUES — BATTERIE with chevrons running in the direction of the energy. */
-private struct FlowStrip: View {
+struct FlowStrip: View {
     let flows: EnergyFlows
 
     var body: some View {
@@ -260,17 +272,18 @@ private struct FlowStrip: View {
     }
 }
 
-private struct Metric: View {
+struct Metric: View {
     let label: String
     let value: String
     let unit: String
     var color: Color = Flat.text
+    var size: CGFloat = 26
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Caps(label)
             HStack(alignment: .firstTextBaseline, spacing: 3) {
-                Text(value).font(.barlow(26, .light)).foregroundStyle(color)
+                Text(value).font(.barlow(size, .light)).foregroundStyle(color)
                 Text(unit).font(.barlow(13)).foregroundStyle(Flat.text2)
             }
         }

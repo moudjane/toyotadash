@@ -23,6 +23,30 @@ extension Color {
     }
 }
 
+/**
+ * App backdrop. Still essentially black, but with faint corner glows so the Liquid Glass
+ * panels on top have something to refract — otherwise glass over pure black is invisible.
+ */
+struct DashBackground: View {
+    var body: some View {
+        ZStack {
+            Flat.bg
+            LinearGradient(colors: [Color(hex: 0x0D0F12), .black], startPoint: .top, endPoint: .bottom)
+            RadialGradient(colors: [Color(hex: 0x142A20).opacity(0.8), .clear],
+                           center: .init(x: 0.14, y: 0.08), startRadius: 0, endRadius: 520)
+            RadialGradient(colors: [Color(hex: 0x102130).opacity(0.8), .clear],
+                           center: .init(x: 0.9, y: 0.9), startRadius: 0, endRadius: 520)
+        }
+    }
+}
+
+extension View {
+    /** The Liquid Glass panel used across the phone dashboard. Reacts to the system Liquid Glass setting. */
+    func glassPanel(_ radius: CGFloat = 26) -> some View {
+        glassEffect(.regular, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
+    }
+}
+
 enum Barlow: String {
     case thin = "Barlow-Thin", light = "Barlow-Light", regular = "Barlow-Regular"
     case medium = "Barlow-Medium", semibold = "Barlow-SemiBold"

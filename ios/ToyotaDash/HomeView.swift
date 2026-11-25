@@ -142,8 +142,9 @@ struct PillButton: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 15)
                 .foregroundStyle(filled ? Color.black : Flat.text)
-                .background(Capsule().fill(filled ? Flat.text : Color.clear))
-                .overlay(Capsule().stroke(filled ? Color.clear : Flat.text3, lineWidth: 1))
+                .glassEffect(filled ? .regular.tint(.white).interactive()
+                                    : .regular.interactive(),
+                             in: Capsule())
         }
         .buttonStyle(.plain)
     }

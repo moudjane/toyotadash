@@ -2,7 +2,7 @@ import SwiftUI
 
 @main
 struct ToyotaDashApp: App {
-    @StateObject private var model = DashModel()
+    @StateObject private var model = DashModel.shared
 
     var body: some Scene {
         WindowGroup {
@@ -22,9 +22,16 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
-            Flat.bg.ignoresSafeArea()
+            DashBackground().ignoresSafeArea()
             if model.values != nil && (model.phase == .connected || model.phase == .demo) {
-                DashboardView().transition(.opacity)
+                GeometryReader { geo in
+                    if geo.size.width >= geo.size.height {
+                        // Wide screen (landscape phone / iPad): the car cockpit on Liquid Glass.
+                        CarDashView(onClose: { model.disconnect() }).transition(.opacity)
+                    } else {
+                        DashboardView().transition(.opacity)
+                    }
+                }
             } else {
                 HomeView().transition(.opacity)
             }
