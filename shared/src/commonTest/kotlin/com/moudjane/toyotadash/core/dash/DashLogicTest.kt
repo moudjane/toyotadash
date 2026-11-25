@@ -4,11 +4,11 @@ import com.moudjane.toyotadash.core.FakeElm
 import com.moudjane.toyotadash.core.Frames
 import com.moudjane.toyotadash.core.elm.ObdDriver
 import com.moudjane.toyotadash.core.pid.StandardPids
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlinx.coroutines.test.runTest
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlin.test.Test
 
 class DashLogicTest {
 
@@ -37,7 +37,7 @@ class DashLogicTest {
         assertEquals(DriveSelect.UNKNOWN, DriveSelect.fromHeadUnit(9))
     }
 
-    @Test fun `poller reads Toyota data and shares one request per command`() = runBlocking {
+    @Test fun `poller reads Toyota data and shares one request per command`() = runTest {
         val elm = FakeElm { cmd ->
             when (cmd) {
                 "010D" -> "410D2A"
@@ -53,7 +53,7 @@ class DashLogicTest {
         assertEquals(1, elm.sent.count { it == "2187" })
     }
 
-    @Test fun `silent ECU is skipped after three misses`() = runBlocking {
+    @Test fun `silent ECU is skipped after three misses`() = runTest {
         val elm = FakeElm()
         val poller = DashPoller(ObdDriver(elm), emptyList())
         repeat(10) { poller.pollOnce() }

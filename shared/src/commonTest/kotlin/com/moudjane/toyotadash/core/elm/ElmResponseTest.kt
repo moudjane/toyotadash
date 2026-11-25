@@ -1,23 +1,23 @@
 package com.moudjane.toyotadash.core.elm
 
 import com.moudjane.toyotadash.core.Frames
-import org.junit.Assert.assertArrayEquals
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.test.Test
 
 class ElmResponseTest {
 
     private fun bytes(vararg b: Int) = ByteArray(b.size) { b[it].toByte() }
 
     @Test fun `single frame answer`() {
-        assertArrayEquals(bytes(0x1A, 0xF8), ElmResponse.extractData("410C1AF8", 0x41, 0x0C))
+        assertContentEquals(bytes(0x1A, 0xF8), ElmResponse.extractData("410C1AF8", 0x41, 0x0C))
     }
 
     @Test fun `spaces, lowercase and SEARCHING line are tolerated`() {
-        assertArrayEquals(bytes(0x7B), ElmResponse.extractData("SEARCHING...\n41 05 7b", 0x41, 0x05))
+        assertContentEquals(bytes(0x7B), ElmResponse.extractData("SEARCHING...\n41 05 7b", 0x41, 0x05))
     }
 
     @Test fun `answer for another PID is ignored`() {
@@ -27,7 +27,7 @@ class ElmResponseTest {
     @Test fun `one answer per responding ECU`() {
         val all = ElmResponse.extractAllData("4100BE3EB813\n410080000001", 0x41, 0x00)
         assertEquals(2, all.size)
-        assertArrayEquals(bytes(0x80, 0x00, 0x00, 0x01), all[1])
+        assertContentEquals(bytes(0x80, 0x00, 0x00, 0x01), all[1])
     }
 
     @Test fun `multi-frame answer is reassembled`() {
@@ -39,7 +39,7 @@ class ElmResponseTest {
 
     @Test fun `errors are detected`() {
         listOf("NO DATA", "CAN ERROR", "UNABLE TO CONNECT", "BUS BUSY", "STOPPED", "?", "")
-            .forEach { assertTrue(it, ElmResponse.isError(it)) }
+            .forEach { assertTrue(ElmResponse.isError(it), it) }
         assertFalse(ElmResponse.isError("410C1AF8"))
         assertTrue(ElmResponse.extractAllData("NO DATA", 0x41, 0x0C).isEmpty())
     }

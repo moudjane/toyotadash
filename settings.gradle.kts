@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ToyotaDash"
 include(":app")
+include(":shared")

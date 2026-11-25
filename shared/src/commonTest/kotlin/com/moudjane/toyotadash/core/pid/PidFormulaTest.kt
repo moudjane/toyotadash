@@ -2,9 +2,9 @@ package com.moudjane.toyotadash.core.pid
 
 import com.moudjane.toyotadash.core.Frames
 import com.moudjane.toyotadash.core.dash.decode
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.Test
 
 /** Formulas checked against values read on the car (Yaris III 100h, 23/11/2026). */
 class PidFormulaTest {
