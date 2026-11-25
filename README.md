@@ -55,18 +55,24 @@ be confirmed on the road (see `TODO.md`).
 ## Project layout
 
 ```
-app/src/main/java/com/moudjane/toyotadash/
-├── core/             Pure Kotlin, no Android dependency (ready to be shared with iOS)
-│   ├── elm/          ELM327 protocol: transport interface, driver, response parsing
-│   ├── pid/          Standard and Toyota hybrid PID definitions
-│   └── dash/         Reading loop, decoding, hybrid state, energy flows, demo drive
-├── data/bluetooth/   Android BLE GATT + Classic SPP transports, scan, reconnect
-├── data/canbus/      Head-unit vehicle data (Settings.System) for ECO / EV mode
-├── data/debug/       Debug TCP bridge
-└── ui/obd/           Connect screen, dashboard, raw-data view, flat palette
+toyotadash/
+├── shared/                Kotlin Multiplatform module, the OBD2 brain
+│   ├── commonMain/        Pure Kotlin, shared by every app
+│   │   ├── core/elm/      ELM327 protocol: transport interface, driver, response parsing
+│   │   ├── core/pid/      Standard and Toyota hybrid PID definitions
+│   │   └── core/dash/     Reading loop, decoding, hybrid state, energy flows, demo drive
+│   ├── androidMain/       Android Bluetooth: BLE GATT + Classic SPP transports, scan
+│   └── commonTest/        Unit tests (run on the JVM)
+└── headunit/              The head-unit app (Jetpack Compose, full screen)
+    ├── data/canbus/       Head-unit vehicle data (Settings.System) for ECO / EV mode
+    ├── data/debug/        Debug TCP bridge
+    └── ui/obd/            Connect screen, dashboard, raw-data view, flat palette
 ```
 
-Stack: Kotlin, Jetpack Compose (Canvas for the custom gauges), coroutines / StateFlow.
+Planned: an Android Auto app and an iPhone / CarPlay app on top of `shared/`
+(an iOS target with a CoreBluetooth transport will be added to `shared/` then).
+
+Stack: Kotlin Multiplatform, Jetpack Compose (Canvas for the custom gauges), coroutines / StateFlow.
 No third-party runtime dependencies.
 
 ## Build & run
@@ -74,15 +80,15 @@ No third-party runtime dependencies.
 Requirements: Android Studio (recent), JDK 11+, an Android device or emulator (min SDK 24).
 
 ```bash
-./gradlew assembleDebug
-adb install app/build/outputs/apk/debug/app-debug.apk
+./gradlew :headunit:assembleDebug
+adb install headunit/build/outputs/apk/debug/headunit-debug.apk
 ```
 
 Unit tests (protocol parsing, PID formulas checked against frames read on the car,
 reading loop with a scripted fake ELM327):
 
 ```bash
-./gradlew testDebugUnitTest
+./gradlew :shared:jvmTest
 ```
 
 No dongle or car? Debug builds have a simulator and fake dongles:
@@ -117,6 +123,6 @@ glanced at, not studied while driving. Use at your own risk.
 ## Credits
 
 - Font: [Barlow](https://github.com/jpt/barlow), SIL Open Font License
-  (`app/src/main/assets/licenses/Barlow-OFL.txt`).
+  (`headunit/src/main/assets/licenses/Barlow-OFL.txt`).
 - Toyota hybrid PID formulas cross-checked against community work on Toyota hybrid diagnostics
   and validated on the car.
