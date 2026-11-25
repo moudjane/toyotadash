@@ -7,10 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.moudjane.toyotadash.core.dash.DashPoller
 import com.moudjane.toyotadash.core.dash.DemoDrive
 import com.moudjane.toyotadash.core.dash.DriveSelect
+import com.moudjane.toyotadash.core.dash.openSession
 import com.moudjane.toyotadash.core.elm.ElmTransport
 import com.moudjane.toyotadash.core.elm.ObdDriver
 import com.moudjane.toyotadash.core.pid.PidDef
-import com.moudjane.toyotadash.core.pid.StandardPids
 import com.moudjane.toyotadash.data.bluetooth.BluetoothRepository
 import com.moudjane.toyotadash.data.bluetooth.BtDevice
 import com.moudjane.toyotadash.data.canbus.CanBusKeys
@@ -123,17 +123,7 @@ class ObdViewModel(application: Application) : AndroidViewModel(application) {
                 val d = ObdDriver(t)
                 driver = d
 
-                _state.update { it.copy(connectStep = "Initialisation ELM327…") }
-                if (!d.initialize()) throw Exception("Le dongle ne répond pas (ELM327)")
-
-                _state.update { it.copy(connectStep = "Recherche du protocole véhicule…") }
-                val supportedPidNums = d.discoverSupportedPids()
-                if (supportedPidNums.isEmpty()) {
-                    throw Exception("La voiture ne répond pas — moteur allumé / READY ?")
-                }
-                val activePids = StandardPids.ALL.filter { pid ->
-                    supportedPidNums.contains(pid.command.substring(2).uppercase())
-                }
+                val activePids = openSession(d) { step -> _state.update { it.copy(connectStep = step) } }
 
                 _state.update {
                     it.copy(
