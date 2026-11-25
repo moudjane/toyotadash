@@ -21,7 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.moudjane.toyotadash.data.obd2.ObdBridgeServer
+import com.moudjane.toyotadash.data.debug.ObdBridgeServer
 import com.moudjane.toyotadash.ui.obd.ConnectScreen
 import com.moudjane.toyotadash.ui.obd.ConnectionStatus
 import com.moudjane.toyotadash.ui.obd.ObdDashboardScreen

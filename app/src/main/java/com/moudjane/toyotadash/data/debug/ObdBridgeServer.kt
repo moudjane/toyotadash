@@ -1,4 +1,4 @@
-package com.moudjane.toyotadash.data.obd2
+package com.moudjane.toyotadash.data.debug
 
 import android.content.Context
 import android.util.Log

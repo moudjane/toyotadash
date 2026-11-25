@@ -1,4 +1,4 @@
-package com.moudjane.toyotadash.data.obd2
+package com.moudjane.toyotadash.core.pid
 
 // ════════════════════════════════════════════════════════════════════════════
 //  PidConfig.kt — CENTRAL PID CONFIGURATION

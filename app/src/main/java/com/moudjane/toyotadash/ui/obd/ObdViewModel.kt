@@ -10,10 +10,10 @@ import com.moudjane.toyotadash.core.elm.ElmResponse
 import com.moudjane.toyotadash.core.elm.ElmTransport
 import com.moudjane.toyotadash.core.elm.ObdDriver
 import com.moudjane.toyotadash.data.canbus.CanBusKeys
-import com.moudjane.toyotadash.data.obd2.PidDef
-import com.moudjane.toyotadash.data.obd2.StandardPids
-import com.moudjane.toyotadash.data.obd2.ToyotaHybridPids
-import com.moudjane.toyotadash.data.obd2.ToyotaPidDef
+import com.moudjane.toyotadash.core.pid.PidDef
+import com.moudjane.toyotadash.core.pid.StandardPids
+import com.moudjane.toyotadash.core.pid.ToyotaHybridPids
+import com.moudjane.toyotadash.core.pid.ToyotaPidDef
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
