@@ -1,6 +1,7 @@
 package com.moudjane.toyotadash.ui.obd
 
 import androidx.compose.foundation.background
+import com.moudjane.toyotadash.core.dash.PidReading
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

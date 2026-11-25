@@ -1,18 +1,10 @@
 package com.moudjane.toyotadash.ui.obd
 
+import com.moudjane.toyotadash.core.dash.DriveSelect
+import com.moudjane.toyotadash.core.dash.PidReading
 import com.moudjane.toyotadash.data.bluetooth.BtDevice
 
 enum class ConnectionStatus { DISCONNECTED, CONNECTING, CONNECTED, ERROR }
-
-data class PidReading(
-    val id: String,         // e.g. "0105" or "2101@7C0"
-    val name: String,
-    val unit: String,
-    val value: Float,
-    val rawHex: String,     // raw hex bytes — useful for verifying PID formulas
-    val isOk: Boolean,      // false if NO DATA or communication error
-    val notes: String = ""  // ⚠ formula notes from PidConfig
-)
 
 data class ObdUiState(
     val connectionStatus: ConnectionStatus = ConnectionStatus.DISCONNECTED,
@@ -40,6 +32,3 @@ data class ObdUiState(
     fun toyota(name: String): Float? =
         toyotaReadings.firstOrNull { it.name == name && it.isOk }?.value
 }
-
-/** State of the car's ECO / EV / POWER mode buttons. */
-enum class DriveSelect { UNKNOWN, NORMAL, ECO, POWER, EV }

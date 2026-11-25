@@ -1,6 +1,9 @@
 package com.moudjane.toyotadash.ui.obd
 
 import androidx.compose.animation.AnimatedVisibility
+import com.moudjane.toyotadash.core.dash.DriveSelect
+import com.moudjane.toyotadash.core.dash.EnergyFlows
+import com.moudjane.toyotadash.core.dash.HybridState
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.AnimatedContent
@@ -103,19 +106,17 @@ fun ObdDashboardScreen(state: ObdUiState, vm: ObdViewModel) {
 
 // ── Drive mode ─────────────────────────────────────────────────────────────
 
-private enum class DriveMode(val label: String, val color: Color) {
-    EV("ÉLECTRIQUE", Flat.regen),
-    HYBRID("HYBRIDE", Flat.text),
-    REGEN("RÉCUPÉRATION", Flat.regen),
-    READY("READY", Flat.text2),
+private val HybridState.label: String get() = when (this) {
+    HybridState.EV     -> "ÉLECTRIQUE"
+    HybridState.HYBRID -> "HYBRIDE"
+    HybridState.REGEN  -> "RÉCUPÉRATION"
+    HybridState.READY  -> "READY"
 }
 
-private fun driveMode(rpm: Float?, speed: Float?, amps: Float?): DriveMode = when {
-    // Regen = braking energy only: with the engine running, a negative current is the engine charging.
-    (amps ?: 0f) < -2f && (speed ?: 0f) > 3f && (rpm ?: 0f) <= 200f -> DriveMode.REGEN
-    (rpm ?: 0f) > 200f                                               -> DriveMode.HYBRID
-    (speed ?: 0f) > 1f                                               -> DriveMode.EV
-    else                                                             -> DriveMode.READY
+private val HybridState.color: Color get() = when (this) {
+    HybridState.EV, HybridState.REGEN -> Flat.regen
+    HybridState.HYBRID                -> Flat.text
+    HybridState.READY                 -> Flat.text2
 }
 
 // ── Cockpit ────────────────────────────────────────────────────────────────
@@ -146,7 +147,7 @@ private fun Cockpit(s: ObdUiState, onOpenDetails: () -> Unit) {
     val blocks   = (1..10).map { s.toyota("HV Block $it") }
     // Positive = power drawn from the battery (assist), negative = regen / charging.
     val kw = if (hvAmp != null && hvVolt != null) hvAmp * hvVolt / 1000f else null
-    val mode = driveMode(rpm, speed, hvAmp)
+    val mode = HybridState.from(rpm, speed, hvAmp)
     val flows = EnergyFlows.from(rpm, speed, hvAmp)
 
     val history = remember { mutableStateListOf<Float>() }
