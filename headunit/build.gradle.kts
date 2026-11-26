@@ -38,6 +38,9 @@ android {
 
 dependencies {
     implementation(project(":shared"))
+    // Android Auto: the Car App Library (templates) + the projected host (phone → car screen).
+    implementation(libs.androidx.car.app)
+    implementation(libs.androidx.car.app.projected)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

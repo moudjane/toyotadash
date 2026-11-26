@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Declares that ToyotaDash is an Android Auto app built on the template library. -->
+<automotiveApp>
+    <uses name="template" />
+</automotiveApp>

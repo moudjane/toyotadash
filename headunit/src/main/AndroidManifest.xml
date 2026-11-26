@@ -44,6 +44,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Android Auto: tells the host this app uses the template library. -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+        <meta-data
+            android:name="androidx.car.app.minCarApiLevel"
+            android:value="1" />
+
+        <!-- The cockpit on the car screen. NAVIGATION category = allowed to draw its own
+             full-screen surface (the only way to draw a custom cockpit in Android Auto). -->
+        <service
+            android:name=".car.DashCarAppService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+                <category android:name="androidx.car.app.category.NAVIGATION" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
