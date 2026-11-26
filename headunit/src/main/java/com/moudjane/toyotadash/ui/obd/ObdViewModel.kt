@@ -4,7 +4,9 @@ import android.app.Application
 import android.provider.Settings
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.moudjane.toyotadash.car.DashHub
 import com.moudjane.toyotadash.core.dash.DashPoller
+import com.moudjane.toyotadash.core.dash.DashValues
 import com.moudjane.toyotadash.core.dash.DemoDrive
 import com.moudjane.toyotadash.core.dash.DriveSelect
 import com.moudjane.toyotadash.core.dash.openSession
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -196,7 +199,7 @@ class ObdViewModel(application: Application) : AndroidViewModel(application) {
         readingJob = viewModelScope.launch(Dispatchers.IO) {
             try {
                 DashPoller(d, standardPids).run { snap ->
-                    _state.update {
+                    val s = _state.updateAndGet {
                         it.copy(
                             standardReadings = snap.standard,
                             toyotaReadings = snap.toyota,
@@ -204,6 +207,8 @@ class ObdViewModel(application: Application) : AndroidViewModel(application) {
                             refreshHz = snap.refreshHz ?: it.refreshHz,
                         )
                     }
+                    // Share the live frame with the Android Auto cockpit (and any other surface).
+                    DashHub.update(DashValues.from(s.standardReadings, s.toyotaReadings, s.adapterVoltage, s.driveSelect))
                 }
             } catch (e: CancellationException) {
                 throw e
@@ -238,6 +243,8 @@ class ObdViewModel(application: Application) : AndroidViewModel(application) {
                         driveSelect      = frame.driveSelect,
                     )
                 }
+                // Mirror the simulated drive onto the Android Auto cockpit too.
+                DashHub.update(DashValues.from(frame.standard, frame.toyota, 14.1f, frame.driveSelect))
                 delay(100L)
             }
         }
