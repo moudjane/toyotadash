@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/logo.png" alt="ToyotaDash logo" width="140"></p>
+
 # ToyotaDash
 
 A full-screen, flat-design dashboard for the **Toyota Yaris III Hybrid (100h)**, built to run
