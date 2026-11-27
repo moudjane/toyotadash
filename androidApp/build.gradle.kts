@@ -14,7 +14,7 @@ android {
         minSdk = 24 // Android 7 — head units often run an older Android than advertised
         targetSdk = 37
         versionCode = 1
-        versionName = "1.0"
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
